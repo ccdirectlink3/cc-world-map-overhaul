@@ -5,8 +5,6 @@ ig.module('game.feature.world-map-overhaul')
     'impact.base.image',
   )
   .defines(() => {
-    const ASSETS_DIR = 'media/gui/better-world-map';
-
     const CHANGED_BUTTON_POSITIONS = {
       arid: { x: 454, y: 213 },
       'autumn-area': { x: 259, y: 158 },
@@ -59,17 +57,16 @@ ig.module('game.feature.world-map-overhaul')
       posY: CROSSHAIR_SPRITE.posY,
     };
 
-    sc.MapModel.inject({
-      initAreas() {
-        this.parent();
-        for (let [id, pos] of Object.entries(CHANGED_BUTTON_POSITIONS)) {
-          this.areas[id].position = pos;
-        }
-      },
+    ccmod.resources.jsonPatches.add('data/database.json', (data) => {
+      for (let [id, pos] of Object.entries(CHANGED_BUTTON_POSITIONS)) {
+        data.areas[id].position = pos;
+      }
     });
 
     sc.AreaButton.inject({
-      patchedGfx: new ig.Image(`${ASSETS_DIR}/patched-area-buttons.png`),
+      patchedGfx: new ig.Image(
+        'mod://world-map-overhaul/media/area-buttons.png',
+      ),
 
       updateDrawables(renderer) {
         if (this.focus) {
@@ -115,7 +112,7 @@ ig.module('game.feature.world-map-overhaul')
     });
 
     sc.MapWorldMap.inject({
-      _seaGfx: new ig.Image(`${ASSETS_DIR}/sea.png`),
+      _seaGfx: new ig.Image(`mod://world-map-overhaul/media/sea.png`),
       _areasGfx: [],
       _areaVisitStatuses: null,
 
@@ -130,7 +127,9 @@ ig.module('game.feature.world-map-overhaul')
         for (let [id, visited] of this._areaVisitStatuses) {
           let overlayType = visited ? 'colored' : 'default';
           this._areasGfx.push(
-            new ig.Image(`${ASSETS_DIR}/overlays/${overlayType}/${id}.png`),
+            new ig.Image(
+              `mod://world-map-overhaul/media/overlays/${overlayType}/${id}.png`,
+            ),
           );
         }
         this._areaVisitStatuses = null;
